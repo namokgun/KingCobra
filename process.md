@@ -1,3 +1,4 @@
+<img width="1299" height="123" alt="image" src="https://github.com/user-attachments/assets/976001c0-71e0-4445-bc91-f5e39ae10ec3" />
 [10주차] 프로젝트 기획 확정 및 기본 CRUD 뼈대 구축
 
 이번 주 목표: 프로그램의 껍데기(메뉴)를 만들고, 최소한 데이터가 메모리에 들어가서 출력되는 것까지 확인해야 합니다.
