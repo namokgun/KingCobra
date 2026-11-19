@@ -1,4 +1,4 @@
-# King Cobra 🐍 — Linked List로 만든 터미널 스네이크 게임
+# King Cobra  — Linked List로 만든 터미널 스네이크 게임
 
 ## 1. 전체 구조
 
