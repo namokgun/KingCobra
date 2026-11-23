@@ -1,7 +1,4 @@
-/*
- * Food.h
- * 먹이 구조체와 먹이 생성 함수 선언입니다.
- */
+﻿/*먹이 함수, 구조체 선언*/
 #ifndef FOOD_H
 #define FOOD_H
 

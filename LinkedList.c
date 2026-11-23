@@ -1,9 +1,4 @@
-/*
- * LinkedList.c
- * 강의자료의 Linked List ADT를 "좌표(x, y)를 저장하는 리스트"로 구현한 파일입니다.
- * 함수 이름(initList, insertFirst, delete ...)은 강의자료와 동일하게 유지했습니다.
- */
-#include <stdio.h>
+﻿#include <stdio.h>
 #include <stdlib.h>
 #include "LinkedList.h"
 
@@ -34,32 +29,33 @@ linkedList* initList(void) {
     return L;
 }
 
-/* 리스트의 길이를 반환한다. */
+/* 리스트의 길이를 반환 */
 int getLength(linkedList* L) {
     return L->length;
 }
 
-/* 리스트의 첫 번째 노드로 삽입한다. (뱀의 새 머리) */
+/* 리스트의 첫 번째 노드로 삽입 (뱀의 새 머리) */
 void insertFirst(linkedList* L, int x, int y) {
-    listNode* newNode = createNode(x, y);   /* ① 노드 준비 + ② 데이터 저장 */
-    newNode->link = L->head;                /* ③ 새 노드가 기존 첫 노드를 가리키게 함 */
-    L->head = newNode;                      /* ④ head가 새 노드를 가리키게 함 */
+    listNode* newNode = createNode(x, y);   /* 1. 노드 준비 + 2. 데이터 저장 */
+    newNode->link = L->head;                /* 3. 새 노드가 기존 첫 노드를 가리키게 함 */
+    L->head = newNode;                      /* 4. head가 새 노드를 가리키게 함 */
     L->length++;
 }
 
-/* 리스트의 마지막 노드로 삽입한다. */
+/* 리스트의 마지막 노드로 삽입 */
 void insertLast(linkedList* L, int x, int y) {
     listNode* newNode = createNode(x, y);   /* 새 노드의 link는 NULL */
 
     if (L->head == NULL) {                  /* 공백 리스트에 삽입 */
         L->head = newNode;
-    } else {
+    }
+    else {
         getTail(L)->link = newNode;         /* 현재 마지막 노드 뒤에 연결 */
     }
     L->length++;
 }
 
-/* 마지막 노드를 찾아 반환한다. */
+/* 마지막 노드를 찾아 반환 */
 listNode* getTail(linkedList* L) {
     listNode* temp = L->head;
 
@@ -70,7 +66,7 @@ listNode* getTail(linkedList* L) {
     return temp;
 }
 
-/* p 노드를 리스트에서 삭제한다. 삭제에 성공하면 TRUE, 실패하면 FALSE */
+/* p 노드를 리스트에서 삭제. 성공하면 TRUE, 실패하면 FALSE */
 int delete(linkedList* L, listNode* p) {
     listNode* pre;
 
@@ -79,15 +75,16 @@ int delete(linkedList* L, listNode* p) {
 
     if (L->head == p) {                               /* 첫 번째 노드 삭제 */
         L->head = p->link;
-    } else {
-        pre = L->head;                                /* ① 삭제할 노드의 앞 노드 찾기 */
+    }
+    else {
+        pre = L->head;                                /* 1. 삭제할 노드의 앞 노드 찾기 */
         while (pre != NULL && pre->link != p) {
             pre = pre->link;
         }
         if (pre == NULL) return FALSE;                /* p가 리스트에 없음 */
-        pre->link = p->link;                          /* ② 앞 노드가 p의 다음 노드를 가리키게 함 */
+        pre->link = p->link;                          /* 2. 앞 노드가 p의 다음 노드를 가리키게 함 */
     }
-    free(p);                                          /* ③ 삭제한 노드의 메모리 해제 */
+    free(p);                                          /* 3. 삭제한 노드의 메모리 해제 */
     L->length--;
     return TRUE;
 }
@@ -103,7 +100,7 @@ listNode* searchNode(linkedList* L, int x, int y) {
     return NULL;
 }
 
-/* 리스트의 모든 노드를 출력한다. (디버깅용) */
+/* 리스트의 모든 노드를 출력 (디버깅용) */
 void displayList(linkedList* L) {
     listNode* p = L->head;
 
@@ -116,19 +113,19 @@ void displayList(linkedList* L) {
     printf(" )  length=%d\n", L->length);
 }
 
-/* 리스트의 모든 노드를 삭제한다. */
+/* 리스트의 모든 노드를 삭제 */
 void clear(linkedList* L) {
     listNode* p;
 
     while (L->head != NULL) {
         p = L->head;
-        L->head = L->head->link;   /* head를 먼저 옮겨 놓고 */
-        free(p);                   /* 이전 첫 노드를 해제 */
+        L->head = L->head->link;    /* head를 먼저 옮겨 놓고 이전 첫 노드를 해제*/
+        free(p);
     }
     L->length = 0;
 }
 
-/* 노드를 모두 지우고, 리스트 구조체까지 해제한다. */
+/* 노드를 모두 지우고, 리스트 구조체까지 해제 */
 void destroyList(linkedList* L) {
     if (L == NULL) return;
     clear(L);

@@ -1,8 +1,4 @@
-/*
- * main.c
- * King Cobra 시작 파일: 초기화 → 게임 반복 → 종료(메모리 해제)만 담당합니다.
- */
-#include <stdlib.h>
+﻿#include <stdlib.h>
 #include <time.h>
 #include "Game.h"
 #include "Screen.h"

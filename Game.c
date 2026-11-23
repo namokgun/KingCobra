@@ -1,19 +1,15 @@
-/*
- * Game.c
- * 게임의 규칙과 메인 루프를 담당합니다.
- * 한 프레임의 흐름: 그리기 → 키 입력 → 방향 적용 → 한 칸 진행(updateGame)
- */
+﻿/* 게임 규칙, 메인 루프 */
 #include "Game.h"
 #include "Screen.h"
 
 /* 키 명령을 뱀의 방향으로 바꾼다. 방향 명령이 아니면 FALSE */
 static int commandToDirection(Command command, Direction* direction) {
     switch (command) {
-        case CMD_UP:    *direction = UP;    return TRUE;
-        case CMD_DOWN:  *direction = DOWN;  return TRUE;
-        case CMD_LEFT:  *direction = LEFT;  return TRUE;
-        case CMD_RIGHT: *direction = RIGHT; return TRUE;
-        default:        return FALSE;
+    case CMD_UP:    *direction = UP;    return TRUE;
+    case CMD_DOWN:  *direction = DOWN;  return TRUE;
+    case CMD_LEFT:  *direction = LEFT;  return TRUE;
+    case CMD_RIGHT: *direction = RIGHT; return TRUE;
+    default:        return FALSE;
     }
 }
 

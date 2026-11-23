@@ -1,15 +1,11 @@
-/*
- * Snake.c
- * 뱀의 이동, 방향 전환, 성장, 충돌 판정을 담당합니다.
- * Linked List가 쓰이는 핵심 지점에는 "[Linked List]" 주석을 달아 두었습니다.
- */
+﻿/* 뱀의 이동, 방향 전환, 성장, 충돌 판정 담당 */
 #include <stddef.h>
 #include "Snake.h"
 
 /* 두 방향이 서로 정반대인지 확인한다. (UP-DOWN, LEFT-RIGHT) */
 static int isOppositeDirection(Direction a, Direction b) {
-    return (a == UP    && b == DOWN)  || (a == DOWN  && b == UP) ||
-           (a == LEFT  && b == RIGHT) || (a == RIGHT && b == LEFT);
+    return (a == UP && b == DOWN) || (a == DOWN && b == UP) ||
+        (a == LEFT && b == RIGHT) || (a == RIGHT && b == LEFT);
 }
 
 /* 맵 중앙에 길이 INITIAL_SNAKE_LENGTH의 뱀을 만든다. 오른쪽을 향해 시작한다. */
@@ -43,10 +39,10 @@ Position getNextHeadPosition(const Snake* snake) {
     Position next = { snake->body->head->x, snake->body->head->y };
 
     switch (snake->direction) {
-        case UP:    next.y--; break;
-        case DOWN:  next.y++; break;
-        case LEFT:  next.x--; break;
-        case RIGHT: next.x++; break;
+    case UP:    next.y--; break;
+    case DOWN:  next.y++; break;
+    case LEFT:  next.x--; break;
+    case RIGHT: next.x++; break;
     }
     return next;
 }
@@ -65,7 +61,7 @@ void growSnake(Snake* snake, Position next) {
 /* 맵 바깥(벽)에 닿았는지 확인한다. */
 int isWallCollision(Position pos) {
     return pos.x < 0 || pos.x >= MAP_WIDTH ||
-           pos.y < 0 || pos.y >= MAP_HEIGHT;
+        pos.y < 0 || pos.y >= MAP_HEIGHT;
 }
 
 /* 다음 머리 위치에 이미 몸통이 있는지 확인한다. */

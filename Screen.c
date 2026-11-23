@@ -1,10 +1,7 @@
-/*
- * Screen.c
- * 화면 그리기와 키 입력 처리를 담당합니다.
- * 운영체제 종속 코드(_WIN32 / POSIX)는 이 파일 안에서만 분기합니다.
- */
+﻿/* 화면 그리기, 키 입력 처리 / OS 구분 */
+
 #ifndef _WIN32
-#define _POSIX_C_SOURCE 200809L   /* clock_gettime, nanosleep 사용을 위해 필요 */
+#define _POSIX_C_SOURCE 200809L   /*clock_gettime, nanosleep 떄문에 필요함 */
 #endif
 
 #include <stdio.h>
@@ -14,23 +11,23 @@
 #include "Screen.h"
 
 #ifdef _WIN32
-    #include <conio.h>
-    #include <windows.h>
-    #ifndef ENABLE_VIRTUAL_TERMINAL_PROCESSING
-        #define ENABLE_VIRTUAL_TERMINAL_PROCESSING 0x0004
-    #endif
+#include <conio.h>
+#include <windows.h>
+#ifndef ENABLE_VIRTUAL_TERMINAL_PROCESSING
+#define ENABLE_VIRTUAL_TERMINAL_PROCESSING 0x0004
+#endif
 #else
-    #include <termios.h>
-    #include <unistd.h>
-    #include <sys/select.h>
-    #include <time.h>
+#include <termios.h>
+#include <unistd.h>
+#include <sys/select.h>
+#include <time.h>
 #endif
 
-/* ---------- 상수 ---------- */
+/* 상수 */
 #define ESC_CODE            27
 #define POLL_INTERVAL_MS    10
 #define OUTPUT_BUFFER_SIZE  32768
-#define CELL_WIDTH          2      /* 터미널 글자는 세로로 길어서, 한 칸을 가로 2글자로 그린다 */
+#define CELL_WIDTH          2
 
 #define ANSI_CLEAR_SCREEN   "\033[2J"
 #define ANSI_CURSOR_HOME    "\033[H"
@@ -43,29 +40,26 @@
 
 typedef enum { TILE_EMPTY, TILE_BODY, TILE_HEAD, TILE_FOOD } Tile;
 
-/* ---------- 내부 상태 ---------- */
+/* 내부 상태*/
 static volatile sig_atomic_t quitRequested = 0;   /* Ctrl+C가 눌렸는지 */
 static int  screenIsOpen = FALSE;
 static char outputBuffer[OUTPUT_BUFFER_SIZE];
 
-/* ======================================================================
- *  1부. 운영체제 종속 코드 (터미널 설정 / 키 한 개 읽기 / 시간)
- * ====================================================================== */
-
+/* 운영체제 종속 코드(터미널 설정 / 키 한 개 읽기 / 시간) */
 /* 입력된 글자(WASD, Q, R)를 명령으로 바꾼다. */
 static Command letterToCommand(int ch) {
     switch (ch) {
-        case 'w': case 'W': return CMD_UP;
-        case 's': case 'S': return CMD_DOWN;
-        case 'a': case 'A': return CMD_LEFT;
-        case 'd': case 'D': return CMD_RIGHT;
-        case 'r': case 'R': return CMD_RESTART;
-        case 'q': case 'Q': return CMD_QUIT;
-        default:            return CMD_NONE;
+    case 'w': case 'W': return CMD_UP;
+    case 's': case 'S': return CMD_DOWN;
+    case 'a': case 'A': return CMD_LEFT;
+    case 'd': case 'D': return CMD_RIGHT;
+    case 'r': case 'R': return CMD_RESTART;
+    case 'q': case 'Q': return CMD_QUIT;
+    default:            return CMD_NONE;
     }
 }
 
-#ifdef _WIN32
+#ifdef _WIN32 /* 윈도우 */
 
 static void setupTerminal(void) {
     HANDLE output = GetStdHandle(STD_OUTPUT_HANDLE);
@@ -77,28 +71,28 @@ static void setupTerminal(void) {
 
 static void restoreTerminal(void) {}
 
-static long nowMs(void)        { return (long)GetTickCount(); }
-static void sleepMs(int ms)    { Sleep((DWORD)ms); }
+static long nowMs(void) { return (long)GetTickCount(); }
+static void sleepMs(int ms) { Sleep((DWORD)ms); }
 
-/* 눌린 키가 있으면 하나 읽어서 명령으로 바꾼다. 없으면 CMD_NONE */
+/* 눌린 키가 있으면 하나 읽어서 명령으로 바꾸기. 없으면 CMD_NONE */
 static Command readOneCommand(void) {
     int ch;
 
     if (!_kbhit()) return CMD_NONE;
     ch = _getch();
-    if (ch == 0 || ch == 224) {            /* 방향키는 2바이트로 들어온다 */
+    if (ch == 0 || ch == 224) {            /* 방향키는 2바이트 */
         switch (_getch()) {
-            case 72: return CMD_UP;
-            case 80: return CMD_DOWN;
-            case 75: return CMD_LEFT;
-            case 77: return CMD_RIGHT;
-            default: return CMD_NONE;
+        case 72: return CMD_UP;
+        case 80: return CMD_DOWN;
+        case 75: return CMD_LEFT;
+        case 77: return CMD_RIGHT;
+        default: return CMD_NONE;
         }
     }
     return letterToCommand(ch);
 }
 
-#else  /* macOS / Linux */
+#else  /* 맥, 리눅스 */
 
 static struct termios originalTerminal;
 static int terminalSaved = FALSE;
@@ -150,11 +144,11 @@ static Command readArrowKey(void) {
     if (seq[0] != '[' && seq[0] != 'O') return CMD_NONE;
 
     switch (seq[1]) {
-        case 'A': return CMD_UP;
-        case 'B': return CMD_DOWN;
-        case 'C': return CMD_RIGHT;
-        case 'D': return CMD_LEFT;
-        default:  return CMD_NONE;
+    case 'A': return CMD_UP;
+    case 'B': return CMD_DOWN;
+    case 'C': return CMD_RIGHT;
+    case 'D': return CMD_LEFT;
+    default:  return CMD_NONE;
     }
 }
 
@@ -165,7 +159,7 @@ static Command readOneCommand(void) {
 
     if (!isKeyPending()) return CMD_NONE;
     count = read(STDIN_FILENO, &ch, 1);
-    if (count == 0) return CMD_QUIT;        /* 입력이 끝났다(EOF) */
+    if (count == 0) return CMD_QUIT;        /* 입력 끝(EOF) */
     if (count < 0) return CMD_NONE;
     if (ch == ESC_CODE) return readArrowKey();
     return letterToCommand(ch);
@@ -173,9 +167,9 @@ static Command readOneCommand(void) {
 
 #endif
 
-/* ======================================================================
- *  2부. 운영체제와 상관없는 코드
- * ====================================================================== */
+/*----------------------------------------------------------------------------*/
+
+
 
 /* Ctrl+C를 받으면 바로 종료하지 않고 표시만 해 둔다. (터미널 복구를 위해) */
 static void handleInterrupt(int signalNumber) {
@@ -229,10 +223,10 @@ static void fillGrid(Tile grid[MAP_HEIGHT][MAP_WIDTH], const Snake* snake, const
 /* 칸 종류에 맞는 출력 문자열(2글자 + 색)을 돌려준다. */
 static const char* tileToText(Tile tile) {
     switch (tile) {
-        case TILE_BODY: return ANSI_GREEN        "[]" ANSI_RESET;
-        case TILE_HEAD: return ANSI_BRIGHT_GREEN "@@" ANSI_RESET;
-        case TILE_FOOD: return ANSI_RED          "()" ANSI_RESET;
-        default:        return "  ";
+    case TILE_BODY: return ANSI_GREEN        "[]" ANSI_RESET;
+    case TILE_HEAD: return ANSI_BRIGHT_GREEN "@@" ANSI_RESET;
+    case TILE_FOOD: return ANSI_RED          "()" ANSI_RESET;
+    default:        return "  ";
     }
 }
 

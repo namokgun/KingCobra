@@ -1,12 +1,8 @@
-/*
- * Food.c
- * 먹이를 맵의 랜덤한 빈 칸에 생성합니다.
- * "빈 칸인지"는 뱀 몸통 리스트를 searchNode로 검색해서 확인합니다.
- */
+﻿/* 랜덤 칸 먹이 생성 */
 #include <stdlib.h>
 #include "Food.h"
 
-/* 랜덤 좌표를 뽑고, 뱀 몸통과 겹치면 다시 뽑는다. */
+ /* 랜덤 좌표를 뽑고, 뱀 몸통과 겹치면 다시 뽑는다. */
 int spawnFood(Food* food, linkedList* snakeBody) {
     Position candidate;
 
